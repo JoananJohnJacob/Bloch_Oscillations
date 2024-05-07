@@ -23,10 +23,10 @@ int main() {
     
 
     // band Gap
-    const double E_gap = 1.5*eV;
+    const double E_gap = 1.5;
 
     //bandwidth of valence band and conduction band
-    const double Delta_E_v = 0.15*eV  , Delta_E_c = 0.85*eV;
+    const double Delta_E_v = 0.15  , Delta_E_c = 0.85;
 
     // Declaring vectors for Energies,frequencies and k
 
