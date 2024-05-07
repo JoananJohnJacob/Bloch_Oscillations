@@ -1,8 +1,9 @@
 #include "global.h"
 
-const double h_cut = 6.582119569e-16;// h_cut in eV
-const double h = 4.135667696e-15; // h in eV
-const double h_bar = 1.054571817e-34; // h_cut in SI
+const double h_cut  = 1.054571817e-34;// reduced planck's constant in SI
+const double h = 6.62607015e-34 ;// plancks constant in SI
+const double h_ev =  4.135667696e-15;
+const double a = 5.657e-10;
 const std::complex<double> i(0, 1);
 const double mu = 4.8e-29;
 const double pi = 3.14159265358979323846;

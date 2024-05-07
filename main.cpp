@@ -23,10 +23,10 @@ int main() {
     
 
     // band Gap
-    const double E_gap = 1.5;
+    const double E_gap = 1.5*eV;
 
     //bandwidth of valence band and conduction band
-    const double Delta_E_v = 0.15  , Delta_E_c = 0.85;
+    const double Delta_E_v = 0.15*eV  , Delta_E_c = 0.85*eV;
 
     // Declaring vectors for Energies,frequencies and k
 
@@ -40,17 +40,36 @@ int main() {
     for (int j = 0; j < n_k; j++){
 
         //initializing k vector
-        kk[j] = (j*(2*pi/n_k) - pi);
+        kk[j] = (j*(2*pi/n_k) - pi)/a;
 
         // Energy dispersion
-        E_v[j] = Delta_E_v/2*(std::cos(kk[j]) - 1);
-        E_c[j] = Delta_E_c/2*(1 -  std::cos(kk[j])) + E_gap;
+        E_v[j] = Delta_E_v/2*(std::cos(kk[j]*a) - 1);
+        E_c[j] = Delta_E_c/2*(1 -  std::cos(kk[j]*a)) + E_gap;
 
         //frequency spectrum
-        w_k[j] = (E_c[j] - E_v[j]) / h_bar;
+        w_k[j] = (E_c[j] - E_v[j]) / h_cut;
     }
 
+
+   /*  plt::plot(kk,E_v);
+    plt::plot(kk,E_c);
+    plt::grid("True");
+    plt::show(); */
     //-------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //---------------------------------------------------INITIALIZING TIME AND ELECTRIC FIELD----------------------------------------------------
     // starting and stopping time
@@ -87,6 +106,15 @@ int main() {
 
     //-------------------------------------------------------------------------------------------------------------------------------
 
+
+
+
+
+
+
+
+
+
     //-------------------------------------------- INITIALIZING VECTORS ------------------------------------------------------------
 
     std::vector<std::vector<std::complex<double>>> p; //microscopic polarization vector
@@ -94,7 +122,7 @@ int main() {
     //initializing polarization vector
     p.resize(n_t,std::vector<std::complex<double>>(n_k)); 
 
-    std::vector<std::complex<double>> P_total(n_t); //macroscopic polarization
+    std::vector<double> P_total(n_t); //macroscopic polarization
 
     //--------------------------------------------------------------------------------------------------------------------------------
     
@@ -113,10 +141,10 @@ int main() {
             //finding p_l and p_r
             if(k_step == 0)
             {
-                p_l = p[time_step][n_k];
+                p_l = p[time_step][n_k-1];
                 p_r = p[time_step][k_step+1];
             }
-            else if(k_step == n_k)
+            else if(k_step == n_k-1)
             {
                 p_l = p[time_step][k_step-1];
                 p_r = p[time_step][0];
@@ -148,6 +176,8 @@ int main() {
         }
     }
 
+    write_to_csv("P_total.csv", P_total,n_t);
+
     //----------------------------------------------------------FOURIER TRANSFORM --------------------------------------------------------- 
 
     // frequency spectrum
@@ -173,8 +203,8 @@ int main() {
     plt::xlabel("Energy in eV");
     plt::ylabel("Absorption");
     plt::legend();
-    plt::ylim(0.0,10e-53);
-    plt::xlim(1.4,2.6);
+    //plt::ylim(0.0,10e-53);
+    plt::xlim(1,5);
     plt::grid("True");
 
    
@@ -186,9 +216,9 @@ int main() {
     plt::legend();
     //plt::plot(kk,w_k);
     plt::grid("True");
-    plt::show();
+    plt::show(); 
 
-
+ 
 
     return 0;
 }
