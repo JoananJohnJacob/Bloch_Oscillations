@@ -8,6 +8,6 @@ const double mu = 4.8e-29;//dipole moment 3 eA
 const double pi = 3.14159265358979323846; // piS
 const double eV = 1.60217663e-19;
 const double T2 = 100e-15;//Dephasing rate
-const double a = 0.1e-9;
+const double a = 5.657e-10;
 const double e = 1.60217663e-19;
 
