@@ -16,7 +16,7 @@ double E(double t) {
 }
 
 double F(double t){
-    double F = (0.2)/(a);
+    double F = 0.2*eV/a;
 
     return F;
 }

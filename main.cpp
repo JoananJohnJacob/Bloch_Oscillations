@@ -14,13 +14,17 @@
 #include "energy.h"
 
 namespace plt = matplotlibcpp;
+const double h_cut_ev = 6.582119569e-16;
 
 int main() {
     //----------------------------------------------------- INITIALIZING PARAMETERS IN K SPACE --------------------------------------------------------
 
     //Number of k-points
-    const int n_k = 750;
+    const int n_k =500;
     
+    // band ga
+
+
 
     // band Gap
     const double E_gap = 1.5*eV;
@@ -47,7 +51,7 @@ int main() {
         E_c[j] = Delta_E_c/2*(1 -  std::cos(kk[j]*a)) + E_gap;
 
         //frequency spectrum
-        w_k[j] = (E_c[j] - E_v[j]) / h_cut;
+        w_k[j] = (E_c[j] - E_v[j]) / (h_bar);
     }
 
 
@@ -122,9 +126,14 @@ int main() {
     //initializing polarization vector
     p.resize(n_t,std::vector<std::complex<double>>(n_k)); 
 
-    std::vector<double> P_total(n_t); //macroscopic polarization
+    std::vector<std::complex<double>> P_total(n_t); //macroscopic polarization
 
     //--------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+    
     
     //---------------------------------------------------RK-SCHEME--------------------------------------------------------------------
     
@@ -132,7 +141,7 @@ int main() {
     std::complex<double> p_now, p_l, p_r, dpdk; // values to store ps 
     double t_now,dk = kk[1]-kk[0];
 
-    for(int time_step = 0; time_step < (n_t-1) ; time_step++){
+    for(int time_step = 0; time_step < (n_t -1) ; time_step++){
 
         for(int k_step = 0; k_step < n_k ; k_step++){
 
@@ -142,11 +151,11 @@ int main() {
             if(k_step == 0)
             {
                 p_l = p[time_step][n_k-1];
-                p_r = p[time_step][k_step+1];
+                p_r = p[time_step][1];
             }
             else if(k_step == n_k-1)
             {
-                p_l = p[time_step][k_step-1];
+                p_l = p[time_step][n_k - 2];
                 p_r = p[time_step][0];
             }
             else
@@ -158,6 +167,7 @@ int main() {
 
             dpdk = (p_r - p_l)/(2*dk);
 
+
             k1 = dpdt(t_now, p_now , w_k[k_step],dpdk);
             k2 = dpdt(t_now+dt2, p_now + dt2*k1, w_k[k_step],dpdk);
             k3 = dpdt(t_now+dt2, p_now + dt2*k2, w_k[k_step],dpdk);
@@ -165,7 +175,10 @@ int main() {
 
             p[time_step+1][k_step] = p[time_step][k_step] + (dt/6)*(k1 + 2.0 *k2 + 2.0 *k3 + k4);
 
+            
+
         }
+        
     }
 
     //finding macroscopic polarization
@@ -176,7 +189,7 @@ int main() {
         }
     }
 
-    write_to_csv("P_total.csv", P_total,n_t);
+   
 
     //----------------------------------------------------------FOURIER TRANSFORM --------------------------------------------------------- 
 
@@ -198,16 +211,17 @@ int main() {
     //Absorption
     std::vector<double> alpha_w_i = imag_part(alpha_w);
 
-    plt::figure(1);
+    
+    /* plt::figure(1);
     plt::named_plot("Absorption",Energy,alpha_w_i);
     plt::xlabel("Energy in eV");
     plt::ylabel("Absorption");
     plt::legend();
-    //plt::ylim(0.0,10e-53);
-    plt::xlim(1,5);
+    //plt::ylim(0.0,3e-53);
+    //plt::xlim(1.4,2.6);
     plt::grid("True");
-
-   
+    
+    
     plt::figure(2);
     plt::named_plot("Valence Band",kk,E_v);
     plt::named_plot("Conduction Band",kk,E_c);
@@ -216,9 +230,47 @@ int main() {
     plt::legend();
     //plt::plot(kk,w_k);
     plt::grid("True");
-    plt::show(); 
-
- 
+    
+    plt::figure(3);
+    plt::named_plot("Re(P(w)",Energy,real_part(P_w));
+    plt::named_plot("Img(P(w)",Energy,imag_part(P_w));
+    plt::named_plot("|P(w)|",Energy,abso(P_w));
+    plt::xlabel("Energy in eV");
+    plt::ylabel("P(w)");
+    plt::grid("True");
+    plt::legend();
+    plt::xlim(1,3);
+    
+    plt::figure(4);
+    plt::plot(t,P_total);
+    plt::grid("True");
+    plt::xlabel("Time");
+    plt::ylabel("Polarization");
+    
+    plt::figure(5);
+    plt::named_plot("Electrc Field",t,E_f);
+    plt::xlabel("Time");
+    plt::xlim(5e-15,20e-15);
+    plt::ylabel("Electric Field");
+    plt::legend();
+    plt::grid("True");
+    
+    plt::figure(6);
+    plt::named_plot("E(w)",Energy,abso(E_w));
+    plt::xlabel("Energy");
+    plt::ylabel("E(w)");
+    plt::xlim(0.75,3.25);    
+    plt::legend();
+    plt::grid("True");
+    plt::show();
+ */
+    write_complex_to_csv("Total Polarization.csv",P_total,n_t);
+    write_to_csv("Time.csv",t,n_t);
+    write_to_csv("Electric Field.csv", E_f, n_t);
+    write_to_csv("K_values.csv",kk,n_k);
+    write_to_csv("Valence band.csv",E_v,n_k);
+    write_to_csv("Conduction Band.csv",E_c,n_k);
+  
 
     return 0;
 }

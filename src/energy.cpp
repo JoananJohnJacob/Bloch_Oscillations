@@ -11,7 +11,7 @@ std::vector<double> energy(std::vector<double> &x)
     
     for(int j=0; j<n; j++)
     {
-        energy[j] = h_ev*x[j];
+        energy[j] = h*x[j];
     
     }
 
