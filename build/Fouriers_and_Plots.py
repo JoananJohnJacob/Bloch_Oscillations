@@ -25,6 +25,9 @@ def readVectorFromCSV(filename):
 P_total = readComplexNumbersFromCSV("Total Polarization.csv")
 t = readVectorFromCSV("Time.csv")
 E = readVectorFromCSV("Electric Field.csv")
+kk = readVectorFromCSV("K_values.csv")
+E_v = readVectorFromCSV("Valence band.csv")  
+E_c = readVectorFromCSV("Conduction Band.csv")
 
 ############################################# Fourier Transforms ##############################################
 
@@ -50,15 +53,16 @@ plt.figure(1)
 
 plt.subplot(3,2,1)
 plt.plot(t,E)
-plt.xlim([5e-15,25e-15])
+plt.xlim([5e-15,50e-15])
 plt.grid("True")
 plt.xlabel("Time")
 plt.ylabel("Electric field")
 
 plt.subplot(3,2,2)
-plt.plot(t,P_total)
-plt.xlabel("Time")
-plt.ylabel("Total Polarization")
+plt.plot(kk,E_v,'r-',kk, E_c, "b-")
+plt.xlabel("k")
+plt.ylabel("E")
+plt.grid("True")
 
 
 plt.subplot(3,2,3)
